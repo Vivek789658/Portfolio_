@@ -63,8 +63,8 @@ document.addEventListener('click', (e) => {
 
 // Initialize EmailJS
 (function () {
-    // Replace with your EmailJS public key
-    emailjs.init("YOUR_PUBLIC_KEY");
+    // Replace 'YOUR_PUBLIC_KEY' with your actual EmailJS public key
+    emailjs.init("iqPbgJylLOcu2MyKp");
 })();
 
 // Contact form handling
@@ -73,42 +73,106 @@ const sendBtn = contactForm.querySelector('button[type="submit"]');
 const buttonText = sendBtn.querySelector('.button-text');
 const buttonIcon = sendBtn.querySelector('.button-icon');
 
+// Form validation
+function validateForm(formData) {
+    const errors = [];
+
+    if (!formData.get('user_name') || formData.get('user_name').trim().length < 2) {
+        errors.push('Name must be at least 2 characters long');
+    }
+
+    if (!formData.get('user_email') || !isValidEmail(formData.get('user_email'))) {
+        errors.push('Please enter a valid email address');
+    }
+
+    if (!formData.get('message') || formData.get('message').trim().length < 10) {
+        errors.push('Message must be at least 10 characters long');
+    }
+
+    return errors;
+}
+
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function showMessage(message, isError = false) {
+    // Remove existing message if any
+    const existingMessage = document.querySelector('.form-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+
+    // Create new message element
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `form-message ${isError ? 'error' : 'success'}`;
+    messageDiv.textContent = message;
+
+    // Insert after the form
+    contactForm.parentNode.insertBefore(messageDiv, contactForm.nextSibling);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (messageDiv.parentNode) {
+            messageDiv.remove();
+        }
+    }, 5000);
+}
+
 contactForm.addEventListener('submit', function (e) {
     e.preventDefault();
+
+    const formData = new FormData(this);
+    const errors = validateForm(formData);
+
+    if (errors.length > 0) {
+        showMessage(errors.join('. '), true);
+        return;
+    }
 
     // Show loading state
     buttonText.textContent = 'Sending...';
     sendBtn.disabled = true;
     buttonIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
-    // Send the email using EmailJS
-    emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
-        .then(function () {
-            // Show success message
-            buttonText.textContent = 'Message Sent!';
-            buttonIcon.innerHTML = '<i class="fas fa-check"></i>';
-            contactForm.reset();
-
-            // Reset button after 3 seconds
-            setTimeout(() => {
-                buttonText.textContent = 'Send Message';
-                buttonIcon.innerHTML = '<i class="fas fa-paper-plane"></i>';
-                sendBtn.disabled = false;
-            }, 3000);
+    // Send email using EmailJS
+    emailjs.sendForm('service_xq2gj6u', 'template_ogstkmq', this)
+        .then(function (response) {
+            console.log('Email sent successfully:', response.status, response.text);
+            showSuccess();
         }, function (error) {
-            // Show error message
-            buttonText.textContent = 'Error!';
-            buttonIcon.innerHTML = '<i class="fas fa-times"></i>';
-            console.error('Email error:', error);
-
-            // Reset button after 3 seconds
-            setTimeout(() => {
-                buttonText.textContent = 'Send Message';
-                buttonIcon.innerHTML = '<i class="fas fa-paper-plane"></i>';
-                sendBtn.disabled = false;
-            }, 3000);
+            console.error('Email sending failed:', error);
+            showError('Failed to send message. Please try again or contact me directly at kumarv11535@gmail.com');
         });
 });
+
+function showSuccess() {
+    buttonText.textContent = 'Message Sent!';
+    buttonIcon.innerHTML = '<i class="fas fa-check"></i>';
+    contactForm.reset();
+    showMessage('Thank you! Your message has been sent successfully. I\'ll get back to you soon.', false);
+
+    // Reset button after 5 seconds
+    setTimeout(() => {
+        buttonText.textContent = 'Send Message';
+        buttonIcon.innerHTML = '<i class="fas fa-paper-plane"></i>';
+        sendBtn.disabled = false;
+    }, 5000);
+}
+
+function showError(errorMessage) {
+    buttonText.textContent = 'Error!';
+    buttonIcon.innerHTML = '<i class="fas fa-times"></i>';
+    showMessage(errorMessage || 'Failed to send message. Please try again.', true);
+
+    // Reset button after 5 seconds
+    setTimeout(() => {
+        buttonText.textContent = 'Send Message';
+        buttonIcon.innerHTML = '<i class="fas fa-paper-plane"></i>';
+        sendBtn.disabled = false;
+    }, 5000);
+}
 
 // Scroll reveal animation
 const revealElements = document.querySelectorAll('.skill-card, .project-card, .about-content');
