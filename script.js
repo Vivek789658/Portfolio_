@@ -175,7 +175,7 @@ function showError(errorMessage) {
 }
 
 // Scroll reveal animation
-const revealElements = document.querySelectorAll('.skill-card, .project-card, .about-content');
+const revealElements = document.querySelectorAll('.skill-card, .project-card, .about-content, .certification-card');
 
 const scrollReveal = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -195,7 +195,7 @@ revealElements.forEach(element => {
 
 // Animate elements when they come into view
 const animateOnScroll = () => {
-    const elements = document.querySelectorAll('.info-item, .skill-card');
+    const elements = document.querySelectorAll('.info-item, .skill-card, .certification-card');
 
     elements.forEach(element => {
         const elementTop = element.getBoundingClientRect().top;
@@ -209,7 +209,7 @@ const animateOnScroll = () => {
 };
 
 // Initialize animation states
-document.querySelectorAll('.info-item, .skill-card').forEach(element => {
+document.querySelectorAll('.info-item, .skill-card, .certification-card').forEach(element => {
     element.style.opacity = '0';
     element.style.transform = 'translateY(20px)';
     element.style.transition = 'all 0.6s ease';
