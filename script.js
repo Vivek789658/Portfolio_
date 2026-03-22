@@ -224,8 +224,8 @@ window.addEventListener('load', animateOnScroll);
 const roles = [
     "Frontend Developer",
     "Backend Developer",
-    "DevOps Engineer",
-    "Cloud Engineer"
+    "DevOps Engineer"
+    
 ];
 
 const dynamicText = document.querySelector(".dynamic-text");
@@ -271,3 +271,27 @@ window.addEventListener('load', () => {
         setTimeout(typeText, 1000);
     }
 });
+
+// Scroll indicator functionality
+const scrollIndicator = document.querySelector('.scroll-indicator');
+if (scrollIndicator) {
+    scrollIndicator.addEventListener('click', () => {
+        const aboutSection = document.querySelector('#about') || document.querySelector('#skills');
+        if (aboutSection) {
+            aboutSection.scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+    });
+
+    // Hide scroll indicator when user scrolls
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 100) {
+            scrollIndicator.style.opacity = '0';
+            scrollIndicator.style.pointerEvents = 'none';
+        } else {
+            scrollIndicator.style.opacity = '1';
+            scrollIndicator.style.pointerEvents = 'auto';
+        }
+    });
+}
